@@ -1,7 +1,7 @@
 Kernel-8086
 
-***** UPDATE ****
-UNTESTED VERSION
+***UPDATE***
+***UNTESTED VERSION***
 ******************
 
 General information
