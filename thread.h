@@ -1,4 +1,4 @@
-/* 
+/*
 ** Monolithic multithreading kernel (8086)
 ** Konstantin Z. Janojlic
 */
@@ -26,6 +26,8 @@ public:
 	void start();
 	void waitToComplete();
 	virtual ~Thread();
+
+	static void sleep(Time timeToSleep);
 
 	ID getId();
 	static ID getRunningId();

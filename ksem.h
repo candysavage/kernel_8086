@@ -17,10 +17,9 @@ public:
 	~KernelSem();
 
 	void signal();
-	int wait(Time maxTimeToWait);
+	int wait(int toBlock);
 	int val();
 
-	static List *waitTimeList;
 	List *blockList;
 };
 

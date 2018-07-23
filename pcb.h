@@ -32,13 +32,12 @@ public:
 	unsigned int ID;
 
 	Time timeToSleep;
-	int signalDeblock;
 
 	static List *pcbList;
+	static List *sleepingThreads;
 	static volatile PCB *Running;
 	static Idle *Idle;
 
-	KernelSem *blockedOn;
 	KernelSem *waitToCompleteSem;
 
 	PCB (Thread* _myThread, int _stackSize, int _timeSlice);
@@ -46,6 +45,7 @@ public:
 	static unsigned int getRunningId();
 	static Thread* getThreadByID(unsigned int id);
 	unsigned int getId();
+	static void sleep(unsigned long t);
 	static void Wrapper();
 	void waitToComplete();
 	void makeStack(void (*function)(), unsigned long size);

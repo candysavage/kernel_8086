@@ -5,13 +5,9 @@
 
 
 Thread::Thread (StackSize stackSize, Time timeSlice) {
-#ifndef BCC_BLOCK_IGNORE
 	hard_lock;
-#endif
 	myPCB = new PCB(this, stackSize, timeSlice);
-#ifndef BCC_BLOCK_IGNORE
 	hard_unlock;
-#endif
 }
 
 void Thread::start() {
@@ -22,17 +18,18 @@ void Thread::start() {
 
 Thread::~Thread() {
 	waitToComplete();
-#ifndef BCC_BLOCK_IGNORE
 	hard_lock;
 	delete myPCB;
 	hard_unlock;
-#endif
 }
 
 void Thread::waitToComplete() {
 	myPCB->waitToComplete();
 }
 
+void Thread::sleep(Time timeToSleep) {
+	PCB::sleep((unsigned long) timeToSleep);
+}
 ID Thread::getRunningId() {
 	return PCB::getRunningId();
 }
@@ -42,13 +39,9 @@ Thread* Thread::getThreadById(ID id) {
 }
 
 void dispatch() {
-#ifndef BCC_BLOCK_IGNORE
 	hard_lock;
-#endif
 	System::contextSwitch = 1;
 	unlock;
 	asm int 8h;
-#ifndef BCC_BLOCK_IGNORE
 	hard_unlock;
-#endif
 }

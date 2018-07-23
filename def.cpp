@@ -24,11 +24,9 @@ IVTEntry::IVTEntry(IVTNo ivtNo, routinePointer new_routine) {
 	hard_unlock;
   #endif
 	IVTEntry::all_entries[ivtNo] = this;
-	#ifndef BCC_BLOCK_IGNORE
 	hard_lock;
 	events = new List();
 	hard_unlock;
-	#endif
 }
 
 IVTEntry::~IVTEntry() {
@@ -46,6 +44,3 @@ void IVTEntry::signal_entry_event(){
 		((KernelEv*)tek->element)->signal();
 	dispatch();
 }
-
-
-

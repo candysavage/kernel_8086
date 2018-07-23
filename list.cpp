@@ -12,24 +12,18 @@ List::~List() {
 		first = first->nextElement;
 		temp->element = 0;
 		temp->nextElement = 0;
-		#ifndef BCC_BLOCK_IGNORE
 		hard_lock;
 		delete temp;
 		hard_unlock;
-		#endif
 	}
 	first = 0;
 	last = 0;
 }
 
 void List::put(void *element) {
-#ifndef BCC_BLOCK_IGNORE
 	hard_lock;
-#endif
 	listElement *newElement = new listElement;
-#ifndef BCC_BLOCK_IGNORE
 	hard_unlock;
-#endif
 	newElement->element = element;
 	newElement->nextElement = 0;
 	if(!first) {
@@ -42,18 +36,17 @@ void List::put(void *element) {
 
 void* List::getFirst() {
 	void *returnElement = 0;
-	if(first)
-	{
+	if(first) {
 		returnElement = first->element;
 		listElement *temp = first;
 		first = first->nextElement;
 		if(!first)
 			last = 0;
-		#ifndef BCC_BLOCK_IGNORE
+		temp->element = 0;
+		temp->nextElement = 0;
 		hard_lock;
 		delete temp;
 		hard_unlock;
-		#endif
 	}
 	return returnElement;
 }
@@ -69,21 +62,15 @@ void List::remove(void *T) {
 	*traverseNode = deletedNode->nextElement;
 	deletedNode->element = 0;
 	deletedNode->nextElement = 0;
-	#ifndef BCC_BLOCK_IGNORE
 	hard_lock;
 	delete deletedNode;
 	hard_unlock;
-	#endif
 }
 
 void List::putSort(void *T, Time timeToSleep) {
-#ifndef BCC_BLOCK_IGNORE
 	hard_lock;
-#endif
 	listElement* n = new listElement;
-#ifndef BCC_BLOCK_IGNORE
 	hard_unlock;
-#endif
 	n->element = T;
 	n->timeToSleep = timeToSleep;
 	n->nextElement = 0;
@@ -121,28 +108,19 @@ void List::removeSort(void *T) {
 				first = curr->nextElement;
 				if(!first)
 					last = 0;
-#ifndef BCC_BLOCK_IGNORE
 				hard_lock;
-#endif
 				delete curr;
-#ifndef BCC_BLOCK_IGNORE
 				hard_unlock;
-#endif
 				break;
 		} else {
 				if(curr != last)
 					curr->nextElement->timeToSleep += curr->timeToSleep;
 				else
 					last = prev;
-
 				prev->nextElement = curr->nextElement;
-#ifndef BCC_BLOCK_IGNORE
 				hard_lock;
-#endif
 				delete curr;
-#ifndef BCC_BLOCK_IGNORE
 				hard_unlock;
-#endif
 				break;
 			}
 		}

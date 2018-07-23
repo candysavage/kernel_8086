@@ -1,4 +1,4 @@
-/* 
+/*
 ** Monolithic multithreading kernel (8086)
 ** Konstantin Z. Janojlic
 */
@@ -16,7 +16,7 @@ public:
 	Semaphore(int init = 1);
 	virtual ~Semaphore();
 
-	virtual int wait (Time maxTimeToWait);
+	virtual int wait (int toBlock);
 	virtual void signal();
 
 	int val() const;		// Returns the current value of the semaphore

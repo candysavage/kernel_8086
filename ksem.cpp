@@ -3,64 +3,49 @@
 #include "system.h"
 #include "pcb.h"
 
-List* KernelSem::waitTimeList = new List();
-
 KernelSem::KernelSem(int init) {
 	value = init;
-#ifndef BCC_BLOCK_IGNORE
 	hard_lock;
-#endif
 	blockList = new List();
-#ifndef BCC_BLOCK_IGNORE
 	hard_unlock;
-#endif
 }
 
 KernelSem::~KernelSem() {
 	while(blockList->first)
 		signal();
-#ifndef BCC_BLOCK_IGNORE
-	hard_lock;
-#endif
-	if(blockList) delete blockList;
-#ifndef BCC_BLOCK_IGNORE
-	hard_unlock;
-#endif
+	if(blockList){
+		hard_lock;
+		delete blockList;
+		hard_unlock;
+	}
 }
 
 void KernelSem::signal() {
 	lock;
 	++value;
-	if(value < 0) {
+	if(value <= 0) {
 		PCB *continued = (PCB*)blockList->getFirst();
 		if(continued) {
-			KernelSem::waitTimeList->removeSort(continued);
 			continued->state = ready;
-			continued->blockedOn = 0;
-			continued->timeToSleep = 0;
-			continued->signalDeblock = 1;
 			Scheduler::put(continued);
 		}
 	}
 	unlock;
 }
 
-int KernelSem::wait(Time maxTimeToWait) {
+int KernelSem::wait(int toBlock) {
+	if(toBlock == 0 && value <= 0)
+		return -1;
 	--value;
 	if(value < 0) {
 		lock;
-		((PCB*)PCB::Running)->blockedOn = this;
 		((PCB*)PCB::Running)->state = blocked;
-		((PCB*)PCB::Running)->timeToSleep = maxTimeToWait;
 		blockList->put((PCB*)PCB::Running);
-		if(maxTimeToWait > 0)
-			KernelSem::waitTimeList->putSort((PCB*)PCB::Running, maxTimeToWait);
 
 		System::block();
-		return ((PCB*)PCB::Running)->signalDeblock;
+		return 1;
 	}
-
-	return 1;
+	return 0;
 }
 
 int KernelSem::val() {

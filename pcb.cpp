@@ -4,6 +4,8 @@
 
 Idle* PCB::Idle = 0;
 List* PCB::pcbList = new List();
+List* PCB::sleepingThreads = new List();
+
 volatile PCB* PCB::Running = 0;
 unsigned int PCB::globalID = 0;
 
@@ -29,28 +31,18 @@ PCB::PCB(Thread* _myThread, int _stackSize, int _timeSlice) {
 	stack = 0;
 	ID = ++globalID;
 	timeToSleep = 0;
-	signalDeblock = 0;
-	blockedOn = 0;
 	waitToCompleteSem = 0;
 	timeSlice = (_timeSlice < 0) ? defaultTimeSlice : _timeSlice;
-	if(_stackSize <= 0)
-		stackSize = defaultStackSize;
-	else
-		stackSize = (defaultStackSize <= _stackSize) ? defaultStackSize : _stackSize;
+	stackSize = (_stackSize <= defaultStackSize) ? defaultStackSize : _stackSize;
 	myThread = _myThread;
 	state = created;
 	PCB::pcbList->put(this);
-#ifndef BCC_BLOCK_IGNORE
 	hard_lock;
-#endif
 	waitToCompleteSem = new KernelSem(0);
-#ifndef BCC_BLOCK_IGNORE
 	hard_unlock;
-#endif
 }
 
 PCB::~PCB() {
-	#ifndef BCC_BLOCK_IGNORE
 	hard_lock;
 	if(stack)
 		delete[] stack;
@@ -59,7 +51,6 @@ PCB::~PCB() {
 	if(this != 0)
 		PCB::pcbList->remove(this);
 	hard_unlock;
-	#endif
 }
 
 unsigned int PCB::getRunningId() {
@@ -73,6 +64,16 @@ void PCB::Wrapper(){
 	((PCB*)PCB::Running)->state = finished;
 	lock;
 	System::shutdown();
+}
+
+void PCB::sleep(unsigned long t) {
+	if(t <= 0)
+		return;
+	lock;
+	((PCB*)PCB::Running)->state = sleeping;
+	((PCB*)PCB::Running)->timeToSleep = t;
+	PCB::sleepingThreads->putSort((PCB*)PCB::Running, t);
+	System::block();
 }
 
 Thread* PCB::getThreadByID(unsigned int id) {

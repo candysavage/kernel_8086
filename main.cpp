@@ -15,9 +15,9 @@ int returnValue = 0;
 int main(int argc, char *argv[]) {
   PCB::Idle = new Idle();
   PCB::Running = new PCB(0, defaultStackSize, defaultTimeSlice);
-  System::timer_routine_override();
+  System::timerRoutineOverride();
   returnValue = userMain(argc, argv);
-  System::timer_routine_restore();
+  System::timerRoutineRestore();
   delete PCB::Idle;
   delete PCB::pcbList;
   delete KernelSem::waitTimeList;

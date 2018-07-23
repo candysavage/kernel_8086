@@ -18,11 +18,11 @@ volatile unsigned int timeRunning = 0;
 volatile int System::contextSwitch = 0;
 volatile int System::globalFlag = 0;
 
-extern void tick();
+// extern void tick();
 
 
-void interrupt System::timer () {	
-	if(System::contextSwitch == 1 || 
+void interrupt System::timer () {
+	if(System::contextSwitch == 1 ||
 		(PCB::Running->timeSlice > 0 && timeRunning >= PCB::Running->timeSlice)) {
 		if(lock_flag == 0) {
 			#ifndef BCC_BLOCK_IGNORE
@@ -39,19 +39,21 @@ void interrupt System::timer () {
 			switch(System::globalFlag)
 			{
 				case 1:													// PCB::Running blocked
-				PCB::Running = Scheduler::get(); break;
+					PCB::Running = Scheduler::get();
+					break;
 
 				case 2:													// PCB::Running finished
-				PCB::Running->state = finished;
-				PCB::Running = Scheduler::get(); break;
+					PCB::Running->state = finished;
+					PCB::Running = Scheduler::get();
+					break;
 
 				default:												// Regular context switch (globalFlag == 0)
-				if(PCB::Running != PCB::Idle->pcb && PCB::Running->state != blocked) {
-					PCB::Running->state = ready;
-					Scheduler::put((PCB*)PCB::Running);
-				}
-				PCB::Running = Scheduler::get();
-				break;
+					if(PCB::Running != PCB::Idle->pcb && PCB::Running->state != blocked) {
+						PCB::Running->state = ready;
+						Scheduler::put((PCB*)PCB::Running);
+					}
+					PCB::Running = Scheduler::get();
+					break;
 			}
 
 			if(PCB::Running == 0)
@@ -79,23 +81,19 @@ void interrupt System::timer () {
 	}
 
 	if(System::contextSwitch == 0 || lock_flag == 1) {
-		tick();
+//		tick();
 
 		++timeRunning;
 
-		if(KernelSem::waitTimeList != 0) {
-			if(KernelSem::waitTimeList->first != 0) {
-				--KernelSem::waitTimeList->first->timeToSleep;
-				while(KernelSem::waitTimeList->first->timeToSleep == 0) {
-					PCB* temp = (PCB*)KernelSem::waitTimeList->first->element;
-					KernelSem::waitTimeList->removeSort(temp);
-					temp->blockedOn->blockList->remove(temp);
-					++temp->blockedOn->value;
-
+		if(PCB::sleepingThreads) {
+			if(!PCB::sleepingThreads->first != 0) {
+				--PCB::sleepingThreads->first->timeToSleep;
+				while(PCB::sleepingThreads->first->timeToSleep == 0) {
+					PCB* temp = (PCB*) PCB::sleepingThreads->first->element;
+					PCB::sleepingThreads->removeSort(temp);
 					temp->state = ready;
-					temp->signalDeblock = 0;
 					if(temp != PCB::Idle->pcb)
-						Scheduler::put((PCB*)temp);
+						Scheduler::put((PCB*) temp);
 				}
 			}
 		}
@@ -110,7 +108,7 @@ void interrupt System::timer () {
 
 
 
-void System::timer_routine_override () {
+void System::timerRoutineOverride () {
 #ifndef BCC_BLOCK_IGNORE
 	hard_lock;
 	routinePointer old = getvect(0x8);
@@ -120,12 +118,12 @@ void System::timer_routine_override () {
 #endif
 }
 
-void System::timer_routine_restore () {
+void System::timerRoutineRestore () {
 #ifndef BCC_BLOCK_IGNORE
 	hard_lock;
 	routinePointer old = getvect(0x62);
 	setvect(0x8,old);
-  	hard_unlock;
+  hard_unlock;
 #endif;
 }
 

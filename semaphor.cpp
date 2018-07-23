@@ -1,28 +1,20 @@
 #include "semaphor.h"
 
 
-Semaphore::Semaphore(int init) {
-#ifndef BCC_BLOCK_IGNORE
+Semaphore::Semaphore(int init = 1) {
 	hard_lock;
-#endif
 	myImpl = new KernelSem(init);
-#ifndef BCC_BLOCK_IGNORE
 	hard_unlock;
-#endif
 }
 
 Semaphore::~Semaphore() {
-#ifndef BCC_BLOCK_IGNORE
 	hard_lock;
-#endif
 	delete myImpl;
-#ifndef BCC_BLOCK_IGNORE
 	hard_unlock;
-#endif
 }
 
-int Semaphore::wait(Time maxTimeToWait) {
-	return myImpl->wait(maxTimeToWait);
+int Semaphore::wait(int toBlock) {
+	return myImpl->wait(toBlock);
 }
 
 void Semaphore::signal() {

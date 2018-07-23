@@ -18,8 +18,8 @@ public:
                                              */
 
 
-  static void timer_routine_override();
-  static void timer_routine_restore();
+  static void timerRoutineOverride();
+  static void timerRoutineRestore();
 
   static void interrupt timer();
 

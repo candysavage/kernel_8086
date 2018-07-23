@@ -1,4 +1,4 @@
-/* 
+/*
 ** Monolithic multithreading kernel (8086)
 ** Konstantin Z. Janojlic
 */
@@ -20,7 +20,7 @@ typedef unsigned int Time;	// time, x 55ms
 const Time defaultTimeSlice = 2;	// default = 2 * 55ms
 typedef int ID;
 
-typedef enum {created, ready, blocked, running, finished} State;
+typedef enum {created, ready, blocked, running, sleeping, finished} State;
 
 typedef unsigned char IVTNo;
 typedef void interrupt (*routinePointer) (...);
@@ -32,7 +32,7 @@ typedef void interrupt (*routinePointer) (...);
 		entry##ivtNo.signal_entry_event();\
 		if(oldRoutine)\
 		entry##ivtNo.old_routine();\
-		}
+	}
 
 class List;
 
