@@ -1,8 +1,3 @@
-/*
-** Monolithic multithreading kernel (8086)
-** Konstantin Z. Janojlic
-*/
-
 #ifndef _IDLE_H_
 #define _IDLE_H_
 

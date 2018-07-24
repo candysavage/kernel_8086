@@ -1,8 +1,3 @@
-/*
-** Monolithic multithreading kernel (8086)
-** Konstantin Z. Janojlic
-*/
-
 #ifndef _pcb_h_
 #define _pcb_h_
 

@@ -1,10 +1,3 @@
-/*
- * def.cpp
- *
- *  Created on: Aug 31, 2017
- *      Author: OS1
- */
-
 #include "def.h"
 
 #include <dos.h>

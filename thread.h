@@ -1,8 +1,3 @@
-/*
-** Monolithic multithreading kernel (8086)
-** Konstantin Z. Janojlic
-*/
-
 #ifndef _thread_h_
 #define _thread_h_
 

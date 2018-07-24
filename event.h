@@ -1,8 +1,3 @@
-/* 
-** Monolithic multithreading kernel (8086)
-** Konstantin Z. Janojlic
-*/
-
 #ifndef _event_h_
 #define _event_h_
 

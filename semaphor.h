@@ -1,8 +1,3 @@
-/*
-** Monolithic multithreading kernel (8086)
-** Konstantin Z. Janojlic
-*/
-
 #ifndef _semaphor_h_
 #define _semaphor_h_
 
@@ -19,7 +14,7 @@ public:
 	virtual int wait (int toBlock);
 	virtual void signal();
 
-	int val() const;		// Returns the current value of the semaphore
+	int val() const;
 
 private:
 	KernelSem* myImpl;
