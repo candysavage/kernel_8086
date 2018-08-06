@@ -10,11 +10,10 @@ volatile PCB* PCB::Running = 0;
 unsigned int PCB::globalID = 0;
 
 void PCB::makeStack (void (*function)(), unsigned long size) {
-	#ifndef BCC_BLOCK_IGNORE
 	hard_lock;
 	stack = new unsigned[size];
 	hard_unlock;
-
+#ifndef BCC_BLOCK_IGNORE
 	stack[size-1] = 0x200;
 	stack[size-2] = FP_SEG(function);
 	stack[size-3] = FP_OFF(function);

@@ -26,8 +26,8 @@ void KernelEv::signal() {
 
 void KernelEv::wait() {
   if(myPCB != (PCB*)PCB::Running) return;
-  lock;
   if((--value) < 0) {
+    lock;
     myPCB->state = blocked;
     dispatch();
   }

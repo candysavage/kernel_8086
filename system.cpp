@@ -24,7 +24,7 @@ volatile int System::globalFlag = 0;
 void interrupt System::timer () {
 	if(System::contextSwitch == 1 ||
 		(PCB::Running->timeSlice > 0 && timeRunning >= PCB::Running->timeSlice)) {
-		if(lock_flag == 0) {
+		if(lockFlag == 0) {
 			#ifndef BCC_BLOCK_IGNORE
 			asm {
 				mov tsp, sp
@@ -80,13 +80,13 @@ void interrupt System::timer () {
 		}
 	}
 
-	if(System::contextSwitch == 0 || lock_flag == 1) {
+	if(System::contextSwitch == 0 || lockFlag == 1) {
 //		tick();
 
 		++timeRunning;
 
 		if(PCB::sleepingThreads) {
-			if(!PCB::sleepingThreads->first != 0) {
+			if(PCB::sleepingThreads->first != 0) {
 				--PCB::sleepingThreads->first->timeToSleep;
 				while(PCB::sleepingThreads->first->timeToSleep == 0) {
 					PCB* temp = (PCB*) PCB::sleepingThreads->first->element;

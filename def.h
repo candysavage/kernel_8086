@@ -1,10 +1,10 @@
 #ifndef _def_h_
 #define _def_h_
 
-volatile int lock_flag = 0;
+volatile int lockFlag = 0;
 
-#define lock lock_flag = 1;
-#define unlock lock_flag = 0;
+#define lock lockFlag = 1;
+#define unlock lockFlag = 0;
 
 #define hard_lock asm{pushf; cli}
 #define hard_unlock asm popf
